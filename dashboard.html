@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CoVoitGo — Tableau de bord</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green: #1DB954; --green-dark: #13873c; --green-bg: rgba(29,185,84,.1);
+      --night: #0D1117; --surface: #161B22; --surface2: #21262D; --surface3: #2D333B;
+      --border: #30363D; --text: #E6EDF3; --muted: #8B949E;
+      --accent: #58A6FF; --warn: #F0B429; --danger: #F85149;
+      --sidebar-w: 240px;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--night); color: var(--text); display: flex; min-height: 100vh; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w); flex-shrink: 0;
+      background: var(--surface); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; bottom: 0; left: 0; z-index: 50;
+    }
+    .sb-logo {
+      padding: 1.5rem 1.4rem 1rem;
+      font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; letter-spacing: -1px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sb-logo span { color: var(--green); }
+    .sb-role-switch {
+      margin: 1rem 1rem .5rem;
+      background: var(--surface2); border-radius: 10px;
+      display: flex; padding: 3px; gap: 3px;
+    }
+    .role-tab {
+      flex: 1; text-align: center; padding: .45rem .5rem;
+      border-radius: 7px; font-size: .78rem; font-weight: 600;
+      cursor: pointer; transition: all .2s; color: var(--muted);
+      border: none; background: transparent;
+    }
+    .role-tab.active { background: var(--green); color: #fff; }
+    .sb-nav { padding: .5rem .75rem; flex: 1; }
+    .sb-section { font-size: .68rem; font-weight: 700; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; padding: .8rem .6rem .4rem; }
+    .sb-item {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .65rem .75rem; border-radius: 8px;
+      color: var(--muted); font-size: .88rem; font-weight: 500;
+      cursor: pointer; transition: all .15s; text-decoration: none;
+      margin-bottom: 2px;
+    }
+    .sb-item:hover { background: var(--surface2); color: var(--text); }
+    .sb-item.active { background: var(--green-bg); color: var(--green); }
+    .sb-item .ico { font-size: 1rem; width: 20px; text-align: center; }
+    .sb-item .badge {
+      margin-left: auto; background: var(--danger); color: #fff;
+      font-size: .65rem; font-weight: 700; padding: .1rem .45rem;
+      border-radius: 99px; min-width: 18px; text-align: center;
+    }
+    .sb-footer { padding: 1rem; border-top: 1px solid var(--border); }
+    .user-chip {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .6rem .75rem; border-radius: 10px;
+      background: var(--surface2); cursor: pointer;
+    }
+    .avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--green), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .user-info .name { font-size: .85rem; font-weight: 600; }
+    .user-info .role-lbl { font-size: .72rem; color: var(--muted); }
+    .rating { margin-left: auto; font-size: .8rem; color: var(--warn); font-weight: 700; }
+
+    /* ── MAIN ── */
+    .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* TOPBAR */
+    .topbar {
+      padding: 1.1rem 2rem; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(13,17,23,.6); backdrop-filter: blur(8px);
+      position: sticky; top: 0; z-index: 40;
+    }
+    .topbar h1 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; letter-spacing: -.5px; }
+    .topbar-right { display: flex; align-items: center; gap: 1rem; }
+    .icon-btn {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: var(--surface); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1rem; transition: background .2s; position: relative;
+    }
+    .icon-btn:hover { background: var(--surface2); }
+    .notif-dot { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; border: 2px solid var(--night); }
+    .btn { font-family: 'DM Sans', sans-serif; font-size: .85rem; font-weight: 500; padding: .5rem 1.1rem; border-radius: 8px; cursor: pointer; border: none; transition: all .2s; display: inline-flex; align-items: center; gap: .4rem; }
+    .btn-primary { background: var(--green); color: #fff; }
+    .btn-primary:hover { background: var(--green-dark); }
+
+    /* CONTENT */
+    .content { padding: 2rem; flex: 1; }
+
+    /* KPI CARDS */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .kpi {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.25rem;
+    }
+    .kpi-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: .8rem; }
+    .kpi-label { font-size: .78rem; color: var(--muted); font-weight: 500; }
+    .kpi-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: .9rem; }
+    .kpi-icon.green { background: var(--green-bg); }
+    .kpi-icon.blue { background: rgba(88,166,255,.12); }
+    .kpi-icon.warn { background: rgba(240,180,41,.12); }
+    .kpi-icon.red { background: rgba(248,81,73,.12); }
+    .kpi-val { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; line-height: 1; }
+    .kpi-delta { font-size: .75rem; color: var(--green); margin-top: .25rem; }
+    .kpi-delta.neg { color: var(--danger); }
+
+    /* GRIDS */
+    .grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+
+    /* CARD */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .card-head {
+      padding: 1rem 1.25rem; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .card-head h2 { font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 700; }
+    .card-body { padding: 1.25rem; }
+    .see-all { font-size: .78rem; color: var(--accent); cursor: pointer; background: none; border: none; font-family: 'DM Sans'; }
+    .see-all:hover { text-decoration: underline; }
+
+    /* TRIP ITEMS */
+    .trip-item {
+      display: flex; align-items: center; gap: 1rem;
+      padding: .9rem 0; border-bottom: 1px solid var(--border);
+    }
+    .trip-item:last-child { border-bottom: none; }
+    .trip-dot-line { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+    .dot.end { background: var(--accent); }
+    .dot-connector { width: 2px; height: 18px; background: var(--border); }
+    .trip-route { flex: 1; }
+    .trip-route .from { font-weight: 500; font-size: .9rem; }
+    .trip-route .to { color: var(--muted); font-size: .85rem; margin-top: .15rem; }
+    .trip-meta { text-align: right; }
+    .trip-meta .date { font-size: .82rem; color: var(--muted); }
+    .trip-meta .price { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--green); font-size: .95rem; margin-top: .1rem; }
+    .status-badge {
+      font-size: .7rem; font-weight: 600; padding: .2rem .6rem;
+      border-radius: 99px; margin-top: .3rem; display: inline-block;
+    }
+    .status-badge.confirmed { background: rgba(29,185,84,.12); color: var(--green); }
+    .status-badge.pending { background: rgba(240,180,41,.12); color: var(--warn); }
+    .status-badge.done { background: var(--surface2); color: var(--muted); }
+
+    /* PASSENGER REQUESTS */
+    .req-item {
+      display: flex; align-items: center; gap: .9rem;
+      padding: .8rem 0; border-bottom: 1px solid var(--border);
+    }
+    .req-item:last-child { border-bottom: none; }
+    .req-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .85rem; flex-shrink: 0; color: #fff;
+    }
+    .req-info { flex: 1; }
+    .req-info .req-name { font-size: .88rem; font-weight: 600; }
+    .req-info .req-route { font-size: .78rem; color: var(--muted); margin-top: .1rem; }
+    .req-stars { font-size: .75rem; color: var(--warn); margin-top: .1rem; }
+    .req-actions { display: flex; gap: .5rem; }
+    .btn-xs { padding: .3rem .75rem; font-size: .75rem; border-radius: 6px; }
+    .btn-accept { background: var(--green-bg); color: var(--green); border: 1px solid rgba(29,185,84,.3); }
+    .btn-accept:hover { background: var(--green); color: #fff; }
+    .btn-decline { background: rgba(248,81,73,.08); color: var(--danger); border: 1px solid rgba(248,81,73,.25); }
+    .btn-decline:hover { background: var(--danger); color: #fff; }
+
+    /* MAP PLACEHOLDER */
+    .map-placeholder {
+      background: var(--surface2); border-radius: 10px;
+      height: 190px; display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: .5rem; color: var(--muted); font-size: .85rem;
+    }
+    .map-placeholder .map-ico { font-size: 2.5rem; }
+
+    /* PUBLISH FORM */
+    .pub-form { display: flex; flex-direction: column; gap: .9rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    .form-group label { display: block; font-size: .72rem; font-weight: 600; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-bottom: .35rem; }
+    .form-group input, .form-group select {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text); font-family: 'DM Sans', sans-serif; font-size: .88rem;
+      padding: .6rem .9rem; border-radius: 8px; outline: none; transition: border-color .2s;
+    }
+    .form-group input:focus, .form-group select:focus { border-color: var(--green); }
+    .form-group select option { background: var(--surface2); }
+
+    /* ECO WIDGET */
+    .eco-bar { margin-bottom: .6rem; }
+    .eco-label { display: flex; justify-content: space-between; font-size: .8rem; color: var(--muted); margin-bottom: .3rem; }
+    .bar-track { height: 6px; background: var(--surface2); border-radius: 99px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--green); border-radius: 99px; }
+    .eco-total { margin-top: 1rem; padding-top: .9rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .eco-total span { font-size: .82rem; color: var(--muted); }
+    .eco-total strong { font-family: 'Syne', sans-serif; font-size: 1.1rem; color: var(--green); }
+
+    /* RECENT REVIEWS */
+    .review-item { padding: .85rem 0; border-bottom: 1px solid var(--border); }
+    .review-item:last-child { border-bottom: none; }
+    .review-top { display: flex; align-items: center; gap: .6rem; margin-bottom: .4rem; }
+    .review-top .r-av {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .review-top .r-name { font-size: .85rem; font-weight: 600; }
+    .review-top .r-stars { margin-left: auto; font-size: .8rem; color: var(--warn); }
+    .review-item p { font-size: .8rem; color: var(--muted); line-height: 1.55; }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.7);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 200; opacity: 0; pointer-events: none; transition: opacity .2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 2rem; width: 100%; max-width: 480px;
+      transform: translateY(20px); transition: transform .2s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 1.2rem; }
+    .modal-actions { display: flex; gap: .75rem; justify-content: flex-end; margin-top: 1.5rem; }
+    .btn-cancel { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+
+    /* TAB TOGGLE */
+    .tabs { display: flex; gap: .5rem; margin-bottom: 1.5rem; }
+    .tab {
+      padding: .45rem 1.1rem; border-radius: 8px; font-size: .85rem; font-weight: 500;
+      cursor: pointer; border: 1px solid transparent; transition: all .15s;
+      background: transparent; color: var(--muted);
+    }
+    .tab.active { background: var(--surface); border-color: var(--border); color: var(--text); }
+
+    @media (max-width: 900px) {
+      .kpi-grid { grid-template-columns: repeat(2,1fr); }
+      .grid-2 { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">CoVoit<span>Go</span></div>
+  <div class="sb-role-switch">
+    <button class="role-tab active" onclick="setRole('driver',this)">🚗 Conducteur</button>
+    <button class="role-tab" onclick="setRole('passenger',this)">🎒 Passager</button>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">Principal</div>
+    <a class="sb-item active" href="#"><span class="ico">📊</span> Tableau de bord</a>
+    <a class="sb-item" href="#"><span class="ico">🗺️</span> Mes trajets</a>
+    <a class="sb-item" href="#"><span class="ico">🔍</span> Rechercher</a>
+    <a class="sb-item" href="#" id="sb-publish"><span class="ico">➕</span> Publier un trajet</a>
+
+    <div class="sb-section">Activité</div>
+    <a class="sb-item" href="#"><span class="ico">💬</span> Messages <span class="badge">3</span></a>
+    <a class="sb-item" href="#"><span class="ico">👥</span> Passagers</a>
+    <a class="sb-item" href="#"><span class="ico">⭐</span> Avis</a>
+
+    <div class="sb-section">Compte</div>
+    <a class="sb-item" href="#"><span class="ico">👤</span> Mon profil</a>
+    <a class="sb-item" href="#"><span class="ico">💰</span> Paiements</a>
+    <a class="sb-item" href="#"><span class="ico">⚙️</span> Paramètres</a>
+    <a class="sb-item" href="index.html"><span class="ico">🏠</span> Accueil</a>
+  </nav>
+  <div class="sb-footer">
+    <div class="user-chip">
+      <div class="avatar">JD</div>
+      <div class="user-info">
+        <div class="name">Jean Dupont</div>
+        <div class="role-lbl" id="role-label">Conducteur actif</div>
+      </div>
+      <div class="rating">⭐ 4.8</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <h1 id="page-title">Tableau de bord — Conducteur</h1>
+    <div class="topbar-right">
+      <div class="icon-btn">🔍</div>
+      <div class="icon-btn">
+        🔔
+        <span class="notif-dot"></span>
+      </div>
+      <button class="btn btn-primary" onclick="openModal()">+ Nouveau trajet</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('upcoming',this)">Prochains trajets</button>
+      <button class="tab" onclick="switchTab('past',this)">Historique</button>
+      <button class="tab" onclick="switchTab('stats',this)">Statistiques</button>
+    </div>
+
+    <!-- KPI -->
+    <div class="kpi-grid" id="kpi-section">
+      <div class="kpi">
+        <div class="kpi-top"><span class="kpi-label">Trajets ce mois</span><div class="kpi-icon green">🚗</div></div>
+        <div class="kpi-val" id="kpi1">14</div>
+        <div class="kpi-delta">+3 vs mois dernier</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-top"><span class="kpi-label">Gains totaux</span><div class="kpi-icon warn">💰</div></div>
+        <div class="kpi-val" id="kpi2">182 €</div>
+        <div class="kpi-delta">+24 € ce mois</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-top"><span class="kpi-label">Note moyenne</span><div class="kpi-icon blue">⭐</div></div>
+        <div class="kpi-val">4.8</div>
+        <div class="kpi-delta">Basé sur 42 avis</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-top"><span class="kpi-label">CO₂ économisé</span><div class="kpi-icon green">🌿</div></div>
+        <div class="kpi-val">68 kg</div>
+        <div class="kpi-delta">+12 kg ce mois</div>
+      </div>
+    </div>
+
+    <!-- ROW 1 -->
+    <div class="grid-2">
+      <!-- UPCOMING TRIPS -->
+      <div class="card">
+        <div class="card-head">
+          <h2>Prochains trajets</h2>
+          <button class="see-all">Voir tout →</button>
+        </div>
+        <div class="card-body" style="padding: .5rem 1.25rem;">
+          <div class="trip-item">
+            <div class="trip-dot-line"><div class="dot"></div><div class="dot-connector"></div><div class="dot end"></div></div>
+            <div class="trip-route"><div class="from">Paris — Bastille</div><div class="to">→ Lyon — Part-Dieu</div></div>
+            <div class="trip-meta">
+              <div class="date">Demain, 08h30</div>
+              <div class="price">+18 €</div>
+              <span class="status-badge confirmed">Confirmé</span>
+            </div>
+          </div>
+          <div class="trip-item">
+            <div class="trip-dot-line"><div class="dot"></div><div class="dot-connector"></div><div class="dot end"></div></div>
+            <div class="trip-route"><div class="from">Lyon</div><div class="to">→ Marseille — St-Charles</div></div>
+            <div class="trip-meta">
+              <div class="date">Sam 17 mai, 14h00</div>
+              <div class="price">+24 €</div>
+              <span class="status-badge pending">En attente</span>
+            </div>
+          </div>
+          <div class="trip-item">
+            <div class="trip-dot-line"><div class="dot"></div><div class="dot-connector"></div><div class="dot end"></div></div>
+            <div class="trip-route"><div class="from">Paris — Nation</div><div class="to">→ Bordeaux</div></div>
+            <div class="trip-meta">
+              <div class="date">Dim 18 mai, 07h15</div>
+              <div class="price">+35 €</div>
+              <span class="status-badge confirmed">Confirmé</span>
+            </div>
+          </div>
+          <div class="trip-item">
+            <div class="trip-dot-line"><div class="dot"></div><div class="dot-connector"></div><div class="dot end"></div></div>
+            <div class="trip-route"><div class="from">Bordeaux</div><div class="to">→ Toulouse — Matabiau</div></div>
+            <div class="trip-meta">
+              <div class="date">Lun 19 mai, 09h00</div>
+              <div class="price">+20 €</div>
+              <span class="status-badge done">Terminé</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REQUESTS -->
+      <div class="card">
+        <div class="card-head">
+          <h2>Demandes passagers</h2>
+          <span style="font-size:.72rem; background: rgba(248,81,73,.12); color:var(--danger); padding:.15rem .55rem; border-radius:99px; font-weight:700;">2 nouvelles</span>
+        </div>
+        <div class="card-body" style="padding:.5rem 1.25rem;">
+          <div class="req-item">
+            <div class="req-avatar" style="background: linear-gradient(135deg,#f0b429,#e67e22);">ML</div>
+            <div class="req-info">
+              <div class="req-name">Marie L.</div>
+              <div class="req-route">Paris → Lyon · Demain 08h30</div>
+              <div class="req-stars">★★★★★ 4.9</div>
+            </div>
+            <div class="req-actions">
+              <button class="btn btn-xs btn-accept">✓</button>
+              <button class="btn btn-xs btn-decline">✕</button>
+            </div>
+          </div>
+          <div class="req-item">
+            <div class="req-avatar" style="background: linear-gradient(135deg,#58a6ff,#7c3aed);">AT</div>
+            <div class="req-info">
+              <div class="req-name">Alex T.</div>
+              <div class="req-route">Paris → Lyon · Demain 08h30</div>
+              <div class="req-stars">★★★★☆ 4.3</div>
+            </div>
+            <div class="req-actions">
+              <button class="btn btn-xs btn-accept">✓</button>
+              <button class="btn btn-xs btn-decline">✕</button>
+            </div>
+          </div>
+          <div class="req-item">
+            <div class="req-avatar" style="background: linear-gradient(135deg,#1db954,#13873c);">SB</div>
+            <div class="req-info">
+              <div class="req-name">Sophie B.</div>
+              <div class="req-route">Lyon → Marseille · Sam 14h00</div>
+              <div class="req-stars">★★★★★ 5.0</div>
+            </div>
+            <div class="req-actions">
+              <button class="btn btn-xs btn-accept">✓</button>
+              <button class="btn btn-xs btn-decline">✕</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2 -->
+    <div class="grid-3">
+
+      <!-- MAP -->
+      <div class="card">
+        <div class="card-head"><h2>Prochain trajet</h2><span style="font-size:.75rem;color:var(--green);">📍 En direct</span></div>
+        <div class="card-body">
+          <div class="map-placeholder">
+            <span class="map-ico">🗺️</span>
+            <span>Carte du trajet (Google Maps API)</span>
+            <span style="font-size:.75rem; color:var(--muted);">Paris → Lyon — 462 km</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-top:1rem; font-size:.82rem; color:var(--muted);">
+            <span>⏱️ ~4h10</span><span>⛽ 38 L estimés</span><span>💸 18 € / siège</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PUBLISH QUICK FORM -->
+      <div class="card">
+        <div class="card-head"><h2>Publier un trajet</h2></div>
+        <div class="card-body">
+          <div class="pub-form">
+            <div class="form-row">
+              <div class="form-group"><label>Départ</label><input type="text" placeholder="Ville…"/></div>
+              <div class="form-group"><label>Arrivée</label><input type="text" placeholder="Ville…"/></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Date</label><input type="date"/></div>
+              <div class="form-group"><label>Heure</label><input type="time"/></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Places</label><select><option>1</option><option>2</option><option selected>3</option><option>4</option></select></div>
+              <div class="form-group"><label>Prix / siège</label><input type="number" placeholder="€" min="1"/></div>
+            </div>
+            <button class="btn btn-primary" style="width:100%; justify-content:center;">Publier →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ECO + REVIEWS -->
+      <div style="display:flex; flex-direction:column; gap:1.25rem;">
+        <div class="card">
+          <div class="card-head"><h2>Impact écologique</h2></div>
+          <div class="card-body">
+            <div class="eco-bar"><div class="eco-label"><span>CO₂ économisé</span><span>68 kg</span></div><div class="bar-track"><div class="bar-fill" style="width:72%"></div></div></div>
+            <div class="eco-bar"><div class="eco-label"><span>Km partagés</span><span>1 840 km</span></div><div class="bar-track"><div class="bar-fill" style="width:55%"></div></div></div>
+            <div class="eco-total"><span>Arbres équivalents</span><strong>🌱 3,4</strong></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>Derniers avis</h2><button class="see-all">Voir tout →</button></div>
+          <div class="card-body" style="padding:.5rem 1.25rem;">
+            <div class="review-item">
+              <div class="review-top">
+                <div class="r-av" style="background:linear-gradient(135deg,#f0b429,#e67e22);">ML</div>
+                <span class="r-name">Marie L.</span>
+                <span class="r-stars">★★★★★</span>
+              </div>
+              <p>Excellent conducteur, ponctuel et très agréable en voiture !</p>
+            </div>
+            <div class="review-item">
+              <div class="review-top">
+                <div class="r-av" style="background:linear-gradient(135deg,#58a6ff,#7c3aed);">AT</div>
+                <span class="r-name">Alex T.</span>
+                <span class="r-stars">★★★★☆</span>
+              </div>
+              <p>Trajet sympa, bonne ambiance. Je recommande.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- MODAL NOUVEAU TRAJET -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3>✦ Publier un nouveau trajet</h3>
+    <div class="pub-form">
+      <div class="form-row">
+        <div class="form-group"><label>Ville de départ</label><input type="text" placeholder="Ex : Paris — Nation"/></div>
+        <div class="form-group"><label>Ville d'arrivée</label><input type="text" placeholder="Ex : Lyon — Part-Dieu"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Date du trajet</label><input type="date"/></div>
+        <div class="form-group"><label>Heure de départ</label><input type="time"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Nombre de places</label><select><option>1</option><option>2</option><option selected>3</option><option>4</option></select></div>
+        <div class="form-group"><label>Contribution (€)</label><input type="number" placeholder="Ex : 15" min="1"/></div>
+      </div>
+      <div class="form-group"><label>Commentaire (optionnel)</label><input type="text" placeholder="Bagages, musique, animaux…"/></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary">Publier le trajet</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setRole(role, btn) {
+    document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    const isDriver = role === 'driver';
+    document.getElementById('page-title').textContent = 'Tableau de bord — ' + (isDriver ? 'Conducteur' : 'Passager');
+    document.getElementById('role-label').textContent = isDriver ? 'Conducteur actif' : 'Passager actif';
+    document.getElementById('kpi1').textContent = isDriver ? '14' : '8';
+    document.getElementById('kpi2').textContent = isDriver ? '182 €' : '96 €';
+  }
+  function switchTab(tab, el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+  function openModal() {
+    document.getElementById('modal').classList.add('open');
+  }
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+  }
+  document.getElementById('modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+  document.getElementById('sb-publish').addEventListener('click', function(e) {
+    e.preventDefault(); openModal();
+  });
+</script>
+</body>
+</html>

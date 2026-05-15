@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CoVoitGo — Voyagez ensemble</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:  #1DB954;
+      --green-dark: #13873c;
+      --night:  #0D1117;
+      --surface: #161B22;
+      --surface2: #21262D;
+      --border: #30363D;
+      --text:   #E6EDF3;
+      --muted:  #8B949E;
+      --accent: #58A6FF;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--night); color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 4rem;
+      background: rgba(13,17,23,.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; }
+    .logo span { color: var(--green); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: .9rem; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta { display: flex; gap: .75rem; }
+    .btn {
+      font-family: 'DM Sans', sans-serif; font-size: .875rem; font-weight: 500;
+      padding: .55rem 1.25rem; border-radius: 8px;
+      cursor: pointer; border: none; transition: all .2s; text-decoration: none;
+      display: inline-flex; align-items: center; gap: .4rem;
+    }
+    .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: var(--surface2); }
+    .btn-primary { background: var(--green); color: #fff; }
+    .btn-primary:hover { background: var(--green-dark); transform: translateY(-1px); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 8rem 2rem 6rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(29,185,84,.2) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 85% 85%, rgba(88,166,255,.1) 0%, transparent 60%);
+    }
+    .road {
+      position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 6px; height: 45%; background: linear-gradient(to top, var(--green), transparent);
+      opacity: .25; border-radius: 9px;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(29,185,84,.1); border: 1px solid rgba(29,185,84,.3);
+      color: var(--green); font-size: .8rem; font-weight: 500;
+      padding: .35rem .9rem; border-radius: 99px; margin-bottom: 1.5rem;
+      position: relative; z-index: 1;
+      animation: fadeDown .6s ease both;
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.6rem, 6vw, 5rem);
+      font-weight: 800; line-height: 1.08; letter-spacing: -2px;
+      max-width: 800px; position: relative; z-index: 1;
+      animation: fadeDown .7s .1s ease both;
+    }
+    .hero h1 .hl { color: var(--green); }
+    .hero p {
+      max-width: 520px; color: var(--muted); font-size: 1.05rem; line-height: 1.75;
+      margin-top: 1.25rem; position: relative; z-index: 1;
+      animation: fadeDown .7s .2s ease both;
+    }
+    .hero-actions {
+      display: flex; gap: 1rem; margin-top: 2.5rem;
+      position: relative; z-index: 1;
+      animation: fadeDown .7s .3s ease both;
+    }
+    .hero-actions .btn { font-size: .95rem; padding: .75rem 1.8rem; border-radius: 10px; }
+
+    /* SEARCH */
+    .search-wrap {
+      max-width: 880px; margin: -2rem auto 0;
+      padding: 0 1.5rem; position: relative; z-index: 10;
+      animation: fadeUp .7s .45s ease both;
+    }
+    .search-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.4rem 1.6rem;
+      display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 1rem; align-items: end;
+    }
+    .field label {
+      display: block; font-size: .72rem; color: var(--muted); font-weight: 600;
+      margin-bottom: .4rem; letter-spacing: .08em; text-transform: uppercase;
+    }
+    .field input {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text); font-family: 'DM Sans', sans-serif; font-size: .9rem;
+      padding: .65rem 1rem; border-radius: 8px; outline: none; transition: border-color .2s;
+    }
+    .field input:focus { border-color: var(--green); }
+    .field input::placeholder { color: var(--muted); }
+
+    /* STATS */
+    .stats-row {
+      max-width: 880px; margin: 2.5rem auto 0; padding: 0 1.5rem;
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 1px;
+      border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+    }
+    .stat { background: var(--surface); padding: 1.5rem; text-align: center; }
+    .stat-num { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--green); }
+    .stat-lbl { color: var(--muted); font-size: .82rem; margin-top: .25rem; }
+
+    /* SECTION */
+    .section { padding: 5rem 2rem; max-width: 1080px; margin: 0 auto; }
+    .s-tag { font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--green); margin-bottom: .7rem; }
+    .s-title { font-family: 'Syne', sans-serif; font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 800; letter-spacing: -1px; line-height: 1.15; max-width: 480px; }
+
+    /* STEPS */
+    .steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.25rem; margin-top: 2.8rem; }
+    .step {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.8rem 1.4rem;
+      transition: transform .2s, border-color .2s;
+    }
+    .step:hover { transform: translateY(-5px); border-color: var(--green); }
+    .step-n { font-family: 'Syne', sans-serif; font-size: 2.8rem; font-weight: 800; color: rgba(29,185,84,.18); line-height: 1; }
+    .step-ico { font-size: 1.7rem; margin: .6rem 0; }
+    .step h3 { font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 700; margin-bottom: .45rem; }
+    .step p { color: var(--muted); font-size: .85rem; line-height: 1.6; }
+
+    /* FEATURES */
+    .feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-top: 2.8rem; }
+    .feat {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.8rem; transition: all .25s;
+    }
+    .feat:hover { border-color: rgba(29,185,84,.4); background: var(--surface2); }
+    .feat-ico {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: rgba(29,185,84,.1); border: 1px solid rgba(29,185,84,.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem; margin-bottom: 1rem;
+    }
+    .feat h3 { font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 700; margin-bottom: .4rem; }
+    .feat p { color: var(--muted); font-size: .84rem; line-height: 1.65; }
+
+    /* CTA BANNER */
+    .cta-section { padding: 0 2rem 5rem; max-width: 1080px; margin: 0 auto; }
+    .cta-box {
+      background: linear-gradient(140deg, rgba(29,185,84,.13) 0%, rgba(29,185,84,.04) 100%);
+      border: 1px solid rgba(29,185,84,.3); border-radius: 20px;
+      padding: 4rem; text-align: center; position: relative; overflow: hidden;
+    }
+    .cta-box::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(29,185,84,.12), transparent 55%);
+    }
+    .cta-box h2 { font-family: 'Syne', sans-serif; font-size: 2.1rem; font-weight: 800; letter-spacing: -1px; position: relative; }
+    .cta-box p { color: var(--muted); font-size: 1rem; max-width: 440px; margin: .8rem auto 2rem; position: relative; }
+    .role-cards { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; position: relative; }
+    .role-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.25rem 2rem;
+      cursor: pointer; transition: all .2s; text-decoration: none; color: inherit;
+      display: flex; flex-direction: column; align-items: flex-start; min-width: 170px;
+    }
+    .role-card:hover { border-color: var(--green); transform: translateY(-2px); }
+    .role-card .ri { font-size: 1.5rem; margin-bottom: .35rem; }
+    .role-card .rl { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .95rem; }
+    .role-card .rs { color: var(--muted); font-size: .78rem; margin-top: .12rem; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border); padding: 2rem 4rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    footer .logo { font-size: 1.1rem; }
+    footer p { color: var(--muted); font-size: .8rem; }
+
+    /* ANIMS */
+    @keyframes fadeDown {
+      from { opacity:0; transform: translateY(-18px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity:0; transform: translateY(22px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.25rem; }
+      .nav-links { display: none; }
+      .search-card { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr 1fr; }
+      .feat-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: .6rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">CoVoit<span>Go</span></div>
+  <ul class="nav-links">
+    <li><a href="#how">Comment ça marche</a></li>
+    <li><a href="#features">Fonctionnalités</a></li>
+    <li><a href="#">Trajets</a></li>
+    <li><a href="#">Communauté</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="dashboard.html" class="btn btn-ghost">Connexion</a>
+    <a href="dashboard.html" class="btn btn-primary">✦ Inscription gratuite</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="road"></div>
+  <div class="hero-tag">🚗 Covoiturage pour tous — Grand public</div>
+  <h1>Voyagez <span class="hl">ensemble,</span><br/>économisez vraiment.</h1>
+  <p>Que vous soyez conducteur ou passager, trouvez ou proposez un trajet en quelques secondes. Court, long, quotidien — CoVoitGo s'adapte à votre vie.</p>
+  <div class="hero-actions">
+    <a href="#search" class="btn btn-primary">🔍 Trouver un trajet</a>
+    <a href="#how" class="btn btn-ghost">Comment ça marche</a>
+  </div>
+</section>
+
+<!-- SEARCH -->
+<div class="search-wrap" id="search">
+  <div class="search-card">
+    <div class="field">
+      <label>Départ</label>
+      <input type="text" placeholder="Ex : Paris, Lyon…" />
+    </div>
+    <div class="field">
+      <label>Arrivée</label>
+      <input type="text" placeholder="Ex : Marseille, Nantes…" />
+    </div>
+    <div class="field">
+      <label>Date</label>
+      <input type="date" />
+    </div>
+    <button class="btn btn-primary" style="padding:.72rem 1.6rem; font-size:.95rem; border-radius:8px;">Rechercher →</button>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat"><div class="stat-num">42 k</div><div class="stat-lbl">Utilisateurs actifs</div></div>
+  <div class="stat"><div class="stat-num">8 200</div><div class="stat-lbl">Trajets par semaine</div></div>
+  <div class="stat"><div class="stat-num">-38 %</div><div class="stat-lbl">Économies carburant</div></div>
+</div>
+
+<!-- HOW -->
+<section class="section" id="how">
+  <div class="s-tag">Processus</div>
+  <h2 class="s-title">Prêt en 4 étapes simples</h2>
+  <div class="steps">
+    <div class="step"><div class="step-n">01</div><div class="step-ico">📝</div><h3>Créez votre compte</h3><p>Inscription rapide, vérification de profil sécurisée en moins de 2 minutes.</p></div>
+    <div class="step"><div class="step-n">02</div><div class="step-ico">🗺️</div><h3>Cherchez ou publiez</h3><p>Un trajet disponible ? Rejoignez-le. Vous conduisez ? Proposez votre itinéraire.</p></div>
+    <div class="step"><div class="step-n">03</div><div class="step-ico">💬</div><h3>Confirmez & discutez</h3><p>Messagerie intégrée pour organiser le point de rendez-vous facilement.</p></div>
+    <div class="step"><div class="step-n">04</div><div class="step-ico">⭐</div><h3>Voyagez & notez</h3><p>Laissez un avis pour renforcer la confiance au sein de la communauté.</p></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="s-tag">Fonctionnalités</div>
+  <h2 class="s-title">Tout ce dont vous avez besoin</h2>
+  <div class="feat-grid">
+    <div class="feat"><div class="feat-ico">🛡️</div><h3>Profils vérifiés</h3><p>Chaque utilisateur est vérifié par pièce d'identité pour votre sécurité.</p></div>
+    <div class="feat"><div class="feat-ico">💳</div><h3>Paiement sécurisé</h3><p>Contribution en ligne sécurisée, remboursement automatique en cas d'annulation.</p></div>
+    <div class="feat"><div class="feat-ico">🔔</div><h3>Notifications temps réel</h3><p>Alertes instantanées pour réservations, messages et rappels de trajet.</p></div>
+    <div class="feat"><div class="feat-ico">🌿</div><h3>Impact écologique</h3><p>Suivez votre CO₂ économisé. Chaque trajet partagé compte pour la planète.</p></div>
+    <div class="feat"><div class="feat-ico">📍</div><h3>Suivi de trajet</h3><p>Partagez votre position en temps réel avec vos proches pour plus de sérénité.</p></div>
+    <div class="feat"><div class="feat-ico">🏢</div><h3>Mode entreprise</h3><p>Solution dédiée pour les collaborateurs d'une même société ou campus.</p></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-box">
+    <h2>Conducteur ou passager ?<br/>Vous êtes les bienvenus.</h2>
+    <p>Rejoignez des milliers de covoitureurs qui font de chaque trajet une expérience agréable.</p>
+    <div class="role-cards">
+      <a href="dashboard.html" class="role-card"><span class="ri">🚗</span><span class="rl">Je conduis</span><span class="rs">Proposer un trajet</span></a>
+      <a href="dashboard.html" class="role-card"><span class="ri">🎒</span><span class="rl">Je voyage</span><span class="rs">Trouver une place</span></a>
+      <a href="dashboard.html" class="role-card"><span class="ri">🔄</span><span class="rl">Les deux !</span><span class="rs">Selon les jours</span></a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="logo">CoVoit<span>Go</span></div>
+  <p>© 2025 CoVoitGo — Projet PHP / MySQL</p>
+  <p>Confidentialité · CGU · Contact</p>
+</footer>
+
+</body>
+</html>
