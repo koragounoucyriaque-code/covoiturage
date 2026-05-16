@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CoVoitGo — Derniers trajets</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .page-header { padding: 8rem 2rem 4rem; text-align: center; background: rgba(29,185,84,0.05); }
+    .page-header h1 { font-family: 'Syne', sans-serif; font-size: 3rem; margin-bottom: 1rem; }
+    .page-container { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; }
+    .auth-container { max-width: 450px; margin: 6rem auto 4rem; padding: 2.5rem; background: #fff; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
+    .auth-container h2 { font-family: 'Syne', sans-serif; font-size: 2rem; margin-bottom: 1.5rem; text-align: center; }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: #555; margin-bottom: 0.5rem; }
+    .form-group input { width: 100%; padding: 0.8rem 1rem; border: 1px solid #ddd; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 1rem; outline: none; transition: border-color 0.2s; }
+    .form-group input:focus { border-color: var(--green, #1DB954); }
+    .btn-full { width: 100%; display: flex; justify-content: center; padding: 0.9rem; font-size: 1.05rem; }
+    .auth-link { text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: #666; }
+    .auth-link a { color: var(--green, #1DB954); font-weight: 600; text-decoration: none; }
+  </style>
+</head>
+<body>
+<nav style="background: rgba(255,255,255,0.95); box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+  <div class="logo"><a href="index.html" style="text-decoration:none; color:inherit;">CoVoit<span>Go</span></a></div>
+  <ul class="nav-links">
+    <li><a href="index.html#how">Comment ça marche</a></li>
+    <li><a href="index.html#features">Fonctionnalités</a></li>
+    <li><a href="public-trips.html">Trajets</a></li>
+    <li><a href="community.html">Communauté</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="login.html" class="btn btn-ghost">Connexion</a>
+    <a href="register.html" class="btn btn-primary">✦ Inscription gratuite</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <h1>Trajets récents</h1>
+  <p style="color:#666; font-size:1.1rem; max-width:600px; margin:0 auto;">Découvrez les derniers trajets publiés par notre communauté et trouvez votre place.</p>
+</div>
+<div class="page-container">
+  <div class="search-card" style="margin-top: -8rem; position:relative; z-index:10; background:#fff; box-shadow:0 10px 30px rgba(0,0,0,0.1); display:flex; gap:1rem; padding:1.5rem; border-radius:12px; margin-bottom:4rem;">
+    <div class="field" style="flex:1;">
+      <label>Départ</label>
+      <input type="text" placeholder="Ex: Paris" style="width:100%; border:none; border-bottom:1px solid #ddd; padding:0.5rem 0; outline:none;" />
+    </div>
+    <div class="field" style="flex:1;">
+      <label>Arrivée</label>
+      <input type="text" placeholder="Ex: Lyon" style="width:100%; border:none; border-bottom:1px solid #ddd; padding:0.5rem 0; outline:none;" />
+    </div>
+    <button class="btn btn-primary" onclick="window.location.href='search.html'">Filtrer</button>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:2rem;">
+    <div style="border:1px solid #eaeaea; border-radius:12px; padding:1.5rem; transition:transform 0.2s; cursor:pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'" onclick="window.location.href='login.html'">
+      <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
+        <span style="background:rgba(29,185,84,0.1); color:#1DB954; padding:4px 10px; border-radius:99px; font-weight:600; font-size:0.8rem;">Aujourd'hui, 18:00</span>
+        <span style="font-family:'Syne'; font-size:1.3rem; font-weight:700;">12 €</span>
+      </div>
+      <div style="font-weight:600; font-size:1.1rem; margin-bottom:5px;">Paris → Lille</div>
+      <div style="color:#666; font-size:0.9rem; margin-bottom:1rem;">3 places disponibles</div>
+      <div style="display:flex; align-items:center; gap:10px; border-top:1px solid #eaeaea; padding-top:1rem;">
+        <div style="width:32px; height:32px; background:linear-gradient(135deg,#f0b429,#e67e22); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.7rem; font-weight:700;">MB</div>
+        <div>
+          <div style="font-size:0.9rem; font-weight:600;">Marc B.</div>
+          <div style="font-size:0.75rem; color:#f0b429;">⭐ 4.8</div>
+        </div>
+      </div>
+    </div>
+    
+    <div style="border:1px solid #eaeaea; border-radius:12px; padding:1.5rem; transition:transform 0.2s; cursor:pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'" onclick="window.location.href='login.html'">
+      <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
+        <span style="background:rgba(29,185,84,0.1); color:#1DB954; padding:4px 10px; border-radius:99px; font-weight:600; font-size:0.8rem;">Demain, 08:30</span>
+        <span style="font-family:'Syne'; font-size:1.3rem; font-weight:700;">25 €</span>
+      </div>
+      <div style="font-weight:600; font-size:1.1rem; margin-bottom:5px;">Lyon → Marseille</div>
+      <div style="color:#666; font-size:0.9rem; margin-bottom:1rem;">1 place disponible</div>
+      <div style="display:flex; align-items:center; gap:10px; border-top:1px solid #eaeaea; padding-top:1rem;">
+        <div style="width:32px; height:32px; background:linear-gradient(135deg,#58a6ff,#7c3aed); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.7rem; font-weight:700;">SL</div>
+        <div>
+          <div style="font-size:0.9rem; font-weight:600;">Sophie L.</div>
+          <div style="font-size:0.75rem; color:#f0b429;">⭐ 4.9</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+<footer style="margin-top:auto;">
+  <div class="logo">CoVoit<span>Go</span></div>
+  <p>© 2025 CoVoitGo — Plateforme de Covoiturage</p>
+  <p>Confidentialité · CGU · Contact</p>
+</footer>
+<script src="js/main.js"></script>
+</body>
+</html>

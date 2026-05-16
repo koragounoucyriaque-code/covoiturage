@@ -11,8 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // --- 2. Initialize Dashboard ---
-  initDashboard();
-
+  // We will call initDashboard at the end of the script to avoid hoisting issues with window.setRole
   function initDashboard() {
     // Check if we arrived from search
     const searchData = localStorage.getItem('covoitSearchData');
@@ -58,18 +57,83 @@ document.addEventListener('DOMContentLoaded', () => {
     animateValue('kpi2', 0, isDriver ? 182 : 96, 1000, ' €');
 
     // Toggle Specific Sections
-    const requestsCard = document.querySelector('.grid-2 .card:nth-child(2)');
-    const publishCard = document.querySelector('.grid-3 .card:nth-child(2)');
+    const driverView = document.getElementById('driver-view');
+    const passengerView = document.getElementById('passenger-view');
     
-    if (requestsCard && publishCard) {
-      if (isDriver) {
-        requestsCard.style.display = 'block';
-        publishCard.style.display = 'block';
-        requestsCard.style.animation = 'fadeIn 0.5s ease forwards';
-        publishCard.style.animation = 'fadeIn 0.5s ease forwards';
-      } else {
-        requestsCard.style.display = 'none';
-        publishCard.style.display = 'none';
+    if (driverView && passengerView) {
+      driverView.style.display = isDriver ? 'block' : 'none';
+      passengerView.style.display = isDriver ? 'none' : 'block';
+      
+      if(isDriver) driverView.style.animation = 'fadeIn 0.5s ease forwards';
+      else passengerView.style.animation = 'fadeIn 0.5s ease forwards';
+    } else {
+      // Fallback for pages that don't have the dual view (like search.html)
+      const requestsCard = document.querySelector('.grid-2 .card:nth-child(2)');
+      const publishCard = document.querySelector('.grid-3 .card:nth-child(2)');
+      
+      if (requestsCard && publishCard) {
+        if (isDriver) {
+          requestsCard.style.display = 'block';
+          publishCard.style.display = 'block';
+          requestsCard.style.animation = 'fadeIn 0.5s ease forwards';
+          publishCard.style.animation = 'fadeIn 0.5s ease forwards';
+        } else {
+          requestsCard.style.display = 'none';
+          publishCard.style.display = 'none';
+        }
+      }
+    }
+
+    // Update Sidebar Navigation
+    const sbNav = document.querySelector('.sb-nav');
+    if (sbNav) {
+      const activePage = window.location.pathname.split('/').pop() || 'dashboard.html';
+      
+      const driverNav = `
+        <div class="sb-section">Principal</div>
+        <a class="sb-item ${activePage === 'dashboard.html' ? 'active' : ''}" href="dashboard.html"><span class="ico">📊</span> Tableau de bord</a>
+        <a class="sb-item ${activePage === 'trips.html' ? 'active' : ''}" href="trips.html"><span class="ico">🗺️</span> Mes trajets</a>
+        <a class="sb-item" href="#" id="sb-publish"><span class="ico">➕</span> Publier un trajet</a>
+
+        <div class="sb-section">Activité</div>
+        <a class="sb-item ${activePage === 'messages.html' ? 'active' : ''}" href="messages.html"><span class="ico">💬</span> Messages <span class="badge" style="display:${state.notifications > 0 ? 'inline-block' : 'none'}">${state.notifications}</span></a>
+        <a class="sb-item ${activePage === 'passengers.html' ? 'active' : ''}" href="passengers.html"><span class="ico">👥</span> Mes Passagers</a>
+        <a class="sb-item ${activePage === 'reviews.html' ? 'active' : ''}" href="reviews.html"><span class="ico">⭐</span> Mes Avis</a>
+
+        <div class="sb-section">Compte</div>
+        <a class="sb-item ${activePage === 'profile.html' ? 'active' : ''}" href="profile.html"><span class="ico">👤</span> Mon profil</a>
+        <a class="sb-item ${activePage === 'payments.html' ? 'active' : ''}" href="payments.html"><span class="ico">💰</span> Gains & Virements</a>
+        <a class="sb-item ${activePage === 'settings.html' ? 'active' : ''}" href="settings.html"><span class="ico">⚙️</span> Paramètres</a>
+        <a class="sb-item" href="index.html"><span class="ico">🏠</span> Accueil</a>
+      `;
+
+      const passengerNav = `
+        <div class="sb-section">Principal</div>
+        <a class="sb-item ${activePage === 'dashboard.html' ? 'active' : ''}" href="dashboard.html"><span class="ico">📊</span> Tableau de bord</a>
+        <a class="sb-item ${activePage === 'search.html' ? 'active' : ''}" href="search.html"><span class="ico">🔍</span> Rechercher un trajet</a>
+        <a class="sb-item ${activePage === 'trips.html' ? 'active' : ''}" href="trips.html"><span class="ico">🗺️</span> Mes réservations</a>
+
+        <div class="sb-section">Activité</div>
+        <a class="sb-item ${activePage === 'messages.html' ? 'active' : ''}" href="messages.html"><span class="ico">💬</span> Messages <span class="badge" style="display:${state.notifications > 0 ? 'inline-block' : 'none'}">${state.notifications}</span></a>
+        <a class="sb-item ${activePage === 'passengers.html' ? 'active' : ''}" href="passengers.html"><span class="ico">🚗</span> Mes Conducteurs</a>
+        <a class="sb-item ${activePage === 'reviews.html' ? 'active' : ''}" href="reviews.html"><span class="ico">⭐</span> Mes Avis</a>
+
+        <div class="sb-section">Compte</div>
+        <a class="sb-item ${activePage === 'profile.html' ? 'active' : ''}" href="profile.html"><span class="ico">👤</span> Mon profil</a>
+        <a class="sb-item ${activePage === 'payments.html' ? 'active' : ''}" href="payments.html"><span class="ico">💳</span> Moyens de paiement</a>
+        <a class="sb-item ${activePage === 'settings.html' ? 'active' : ''}" href="settings.html"><span class="ico">⚙️</span> Paramètres</a>
+        <a class="sb-item" href="index.html"><span class="ico">🏠</span> Accueil</a>
+      `;
+
+      sbNav.innerHTML = isDriver ? driverNav : passengerNav;
+
+      // Reattach event listener for sb-publish if it exists
+      const sbPublish = document.getElementById('sb-publish');
+      if (sbPublish) {
+        sbPublish.addEventListener('click', function(e) {
+          e.preventDefault();
+          openModal();
+        });
       }
     }
 
@@ -146,14 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === this) closeModal();
   });
 
-  document.getElementById('sb-publish').addEventListener('click', function(e) {
-    e.preventDefault(); 
-    if(state.role !== 'driver') {
-      showToast('Vous devez être en mode conducteur pour publier.', 'warning');
-      setRole('driver', document.querySelectorAll('.role-tab')[0]);
-    }
-    openModal();
-  });
+  // Modal sb-publish listener is now attached dynamically inside setRole
 
   // --- 6. Publish Trip Form ---
   function attachPublishForm() {
@@ -338,5 +395,52 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     window.requestAnimationFrame(step);
   }
+
+  // --- 10. Generic Button Handlers for Prototype ---
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn, .see-all, button');
+    if (!btn) return;
+
+    // Ignore buttons with specific logic already
+    if (btn.classList.contains('role-tab') || 
+        btn.classList.contains('tab') || 
+        btn.classList.contains('btn-cancel') || 
+        btn.classList.contains('btn-accept') || 
+        btn.classList.contains('btn-decline') || 
+        (btn.closest('.pub-form') && btn.classList.contains('btn-primary')) || 
+        (btn.closest('.modal') && btn.classList.contains('btn-primary'))) return;
+
+    if (btn.tagName === 'BUTTON' || btn.getAttribute('role') === 'button' || btn.tagName === 'A') {
+      // Don't prevent default on real links
+      if(btn.tagName === 'A' && btn.getAttribute('href') && btn.getAttribute('href') !== '#') {
+          return;
+      }
+      e.preventDefault();
+      
+      const text = btn.textContent.trim().toLowerCase();
+      
+      if (text.includes('retirer')) {
+        showToast('Demande de retrait effectuée. Traitement sous 48h.', 'success');
+      } else if (text.includes('envoyer')) {
+        const input = btn.previousElementSibling;
+        if (input && input.tagName === 'INPUT' && input.value) {
+           showToast('Message envoyé !', 'success');
+           input.value = '';
+        } else {
+           showToast('Veuillez écrire un message.', 'warning');
+        }
+      } else if (text.includes('voir tout')) {
+        showToast('Chargement des autres éléments...', 'info');
+      } else if (text.includes('déconnexion')) {
+        showToast('Déconnexion en cours...', 'info');
+        setTimeout(() => window.location.href = 'index.html', 800);
+      } else {
+        showToast('Action effectuée avec succès (Simulation).', 'success');
+      }
+    }
+  });
+
+  // Initialize everything now that all functions are defined
+  initDashboard();
 
 });

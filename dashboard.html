@@ -18,27 +18,27 @@
   </div>
   <nav class="sb-nav">
     <div class="sb-section">Principal</div>
-    <a class="sb-item active" href="#"><span class="ico">📊</span> Tableau de bord</a>
-    <a class="sb-item" href="#"><span class="ico">🗺️</span> Mes trajets</a>
-    <a class="sb-item" href="#"><span class="ico">🔍</span> Rechercher</a>
+    <a class="sb-item active" href="dashboard.html"><span class="ico">📊</span> Tableau de bord</a>
+    <a class="sb-item" href="trips.html"><span class="ico">🗺️</span> Mes trajets</a>
+    <a class="sb-item" href="search.html"><span class="ico">🔍</span> Rechercher</a>
     <a class="sb-item" href="#" id="sb-publish"><span class="ico">➕</span> Publier un trajet</a>
 
     <div class="sb-section">Activité</div>
-    <a class="sb-item" href="#"><span class="ico">💬</span> Messages <span class="badge">3</span></a>
-    <a class="sb-item" href="#"><span class="ico">👥</span> Passagers</a>
-    <a class="sb-item" href="#"><span class="ico">⭐</span> Avis</a>
+    <a class="sb-item" href="messages.html"><span class="ico">💬</span> Messages <span class="badge">3</span></a>
+    <a class="sb-item" href="passengers.html"><span class="ico">👥</span> Passagers</a>
+    <a class="sb-item" href="reviews.html"><span class="ico">⭐</span> Avis</a>
 
     <div class="sb-section">Compte</div>
-    <a class="sb-item" href="#"><span class="ico">👤</span> Mon profil</a>
-    <a class="sb-item" href="#"><span class="ico">💰</span> Paiements</a>
-    <a class="sb-item" href="#"><span class="ico">⚙️</span> Paramètres</a>
+    <a class="sb-item" href="profile.html"><span class="ico">👤</span> Mon profil</a>
+    <a class="sb-item" href="payments.html"><span class="ico">💰</span> Paiements</a>
+    <a class="sb-item" href="settings.html"><span class="ico">⚙️</span> Paramètres</a>
     <a class="sb-item" href="index.html"><span class="ico">🏠</span> Accueil</a>
   </nav>
   <div class="sb-footer">
     <div class="user-chip">
-      <div class="avatar">JD</div>
+      <div class="avatar">CK</div>
       <div class="user-info">
-        <div class="name">Jean Dupont</div>
+        <div class="name">Cyriaque KORA</div>
         <div class="role-lbl" id="role-label">Conducteur actif</div>
       </div>
       <div class="rating">⭐ 4.8</div>
@@ -60,7 +60,7 @@
     </div>
   </div>
 
-  <div class="content">
+  <div id="driver-view">
 
     <!-- TABS -->
     <div class="tabs">
@@ -266,7 +266,84 @@
   </div><!-- /content -->
 </div><!-- /main -->
 
-<!-- MODAL NOUVEAU TRAJET -->
+</div>
+    <div id="passenger-view" style="display:none;">
+      <!-- TABS -->
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('upcoming',this)">Mes Réservations</button>
+        <button class="tab" onclick="switchTab('past',this)">Historique</button>
+      </div>
+
+      <!-- KPI -->
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-top"><span class="kpi-label">Trajets ce mois</span><div class="kpi-icon blue">🎒</div></div>
+          <div class="kpi-val">4</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-top"><span class="kpi-label">Dépenses</span><div class="kpi-icon red">💸</div></div>
+          <div class="kpi-val">54 €</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-top"><span class="kpi-label">Note Passager</span><div class="kpi-icon warn">⭐</div></div>
+          <div class="kpi-val">4.9</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-top"><span class="kpi-label">CO₂ évité</span><div class="kpi-icon green">🌿</div></div>
+          <div class="kpi-val">32 kg</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- NEXT TRIP -->
+        <div class="card">
+          <div class="card-head">
+            <h2>Prochain départ</h2>
+            <span class="status-badge confirmed">Confirmé</span>
+          </div>
+          <div class="card-body">
+            <div class="trip-route" style="background:var(--surface2); padding:1.2rem; border-radius:10px; margin-bottom:1rem;">
+              <div class="from" style="font-size:1.1rem; margin-bottom:0.5rem;"><strong>08:30</strong> — Paris (Nation)</div>
+              <div class="to" style="font-size:1.1rem;"><strong>12:45</strong> — Lyon (Part-Dieu)</div>
+            </div>
+            
+            <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
+              <div class="avatar" style="width:50px; height:50px; background:linear-gradient(135deg,#1db954,#13873c);">MR</div>
+              <div style="flex:1;">
+                <div style="font-weight:600; font-size:1.1rem;">Marc R. (Conducteur)</div>
+                <div style="color:var(--warn); font-size:0.85rem;">⭐ 4.8 - Renault Clio Rouge</div>
+              </div>
+              <button class="btn btn-ghost" style="border:1px solid var(--border);">Contacter</button>
+            </div>
+            
+            <div class="map-placeholder" style="height:120px;">
+              <span class="map-ico">🗺️</span>
+              <span>Suivi du trajet en direct</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUICK SEARCH -->
+        <div class="card">
+          <div class="card-head"><h2>Recherche Rapide</h2></div>
+          <div class="card-body">
+            <div class="pub-form">
+              <div class="form-group"><label>Départ</label><input type="text" placeholder="Où êtes-vous ?"/></div>
+              <div class="form-group"><label>Arrivée</label><input type="text" placeholder="Où allez-vous ?"/></div>
+              <div class="form-group"><label>Date</label><input type="date"/></div>
+              <button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="window.location.href='search.html'">Rechercher</button>
+            </div>
+            
+            <h3 style="margin-top:2rem; font-size:0.9rem; color:var(--muted); margin-bottom:1rem;">Recherches récentes</h3>
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+              <span style="background:var(--surface2); padding:5px 10px; border-radius:6px; font-size:0.8rem; cursor:pointer;">Lyon → Marseille</span>
+              <span style="background:var(--surface2); padding:5px 10px; border-radius:6px; font-size:0.8rem; cursor:pointer;">Paris → Lille</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- MODAL NOUVEAU TRAJET -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <h3>✦ Publier un nouveau trajet</h3>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CoVoitGo — Tableau de bord</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">CoVoit<span>Go</span></div>
+  <div class="sb-role-switch">
+    <button class="role-tab active" onclick="setRole('driver',this)">🚗 Conducteur</button>
+    <button class="role-tab" onclick="setRole('passenger',this)">🎒 Passager</button>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">Principal</div>
+    <a class="sb-item" href="dashboard.html"><span class="ico">📊</span> Tableau de bord</a>
+    <a class="sb-item" href="trips.html"><span class="ico">🗺️</span> Mes trajets</a>
+    <a class="sb-item" href="search.html"><span class="ico">🔍</span> Rechercher</a>
+    <a class="sb-item" href="#" id="sb-publish"><span class="ico">➕</span> Publier un trajet</a>
+
+    <div class="sb-section">Activité</div>
+    <a class="sb-item" href="messages.html"><span class="ico">💬</span> Messages <span class="badge">3</span></a>
+    <a class="sb-item" href="passengers.html"><span class="ico">👥</span> Passagers</a>
+    <a class="sb-item" href="reviews.html"><span class="ico">⭐</span> Avis</a>
+
+    <div class="sb-section">Compte</div>
+    <a class="sb-item" href="profile.html" class="sb-item active"><span class="ico">👤</span> Mon profil</a>
+    <a class="sb-item" href="payments.html"><span class="ico">💰</span> Paiements</a>
+    <a class="sb-item" href="settings.html"><span class="ico">⚙️</span> Paramètres</a>
+    <a class="sb-item" href="index.html"><span class="ico">🏠</span> Accueil</a>
+  </nav>
+  <div class="sb-footer">
+    <div class="user-chip">
+      <div class="avatar">CK</div>
+      <div class="user-info">
+        <div class="name">Cyriaque KORA</div>
+        <div class="role-lbl" id="role-label">Conducteur actif</div>
+      </div>
+      <div class="rating">⭐ 4.8</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <h1 id="page-title">Mon profil — Conducteur</h1>
+    <div class="topbar-right">
+      <div class="icon-btn">🔍</div>
+      <div class="icon-btn">
+        🔔
+        <span class="notif-dot"></span>
+      </div>
+      <button class="btn btn-primary" onclick="openModal()">+ Nouveau trajet</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-head"><h2>Informations personnelles</h2></div>
+        <div class="card-body">
+          <div style="text-align:center; margin-bottom:1.5rem; position:relative;">
+            <div class="avatar" id="profile-avatar" style="width:100px; height:100px; font-size:2.5rem; margin:0 auto 1rem;">CK</div>
+            <button class="btn btn-xs" style="position:absolute; top:70px; right:calc(50% - 50px); background:var(--surface2); border:1px solid var(--border);">✏️</button>
+            <h3 id="profile-name-disp">Cyriaque KORA</h3>
+            <p style="color:var(--muted); font-size:0.85rem;">Membre depuis Janvier 2024</p>
+          </div>
+          <div class="pub-form">
+            <div class="form-row">
+              <div class="form-group"><label>Prénom</label><input type="text" id="prof-fname" value="Cyriaque" /></div>
+              <div class="form-group"><label>Nom</label><input type="text" id="prof-lname" value="KORA" /></div>
+            </div>
+            <div class="form-group"><label>Email</label><input type="email" value="cyriaque.kora@example.com" /></div>
+            <div class="form-group"><label>Téléphone</label><input type="text" value="+33 6 12 34 56 78" /></div>
+            <button class="btn btn-primary" onclick="saveProfile()" style="margin-top:1rem; width:100%; justify-content:center;">Enregistrer les modifications</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Véhicule</h2></div>
+        <div class="card-body">
+          <div class="pub-form">
+            <div class="form-group"><label>Marque et Modèle</label><input type="text" id="car-model" value="Peugeot 208" /></div>
+            <div class="form-group"><label>Couleur</label><input type="text" id="car-color" value="Gris" /></div>
+            <div class="form-group"><label>Immatriculation</label><input type="text" id="car-plate" value="AB-123-CD" /></div>
+            <button class="btn btn-ghost" onclick="saveCar()" style="margin-top:1rem; border:1px solid var(--border); color:var(--text); background:transparent; width:100%; justify-content:center;">Mettre à jour le véhicule</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function saveProfile() {
+        const fname = document.getElementById('prof-fname').value;
+        const lname = document.getElementById('prof-lname').value;
+        document.getElementById('profile-name-disp').textContent = fname + ' ' + lname;
+        document.getElementById('profile-avatar').textContent = (fname[0] + lname[0]).toUpperCase();
+        
+        // Try to update sidebar name if it exists
+        const sbName = document.querySelector('.sidebar .user-info .name');
+        if(sbName) sbName.textContent = fname + ' ' + lname;
+        const sbAvatar = document.querySelector('.sidebar .avatar');
+        if(sbAvatar) sbAvatar.textContent = (fname[0] + lname[0]).toUpperCase();
+
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-success';
+        toast.style.cssText = 'position:fixed; bottom:24px; right:24px; padding:12px 20px; background:#2ea043; color:#fff; border-radius:8px; z-index:9999;';
+        toast.textContent = 'Profil mis à jour avec succès !';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      }
+      function saveCar() {
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-success';
+        toast.style.cssText = 'position:fixed; bottom:24px; right:24px; padding:12px 20px; background:#2ea043; color:#fff; border-radius:8px; z-index:9999;';
+        toast.textContent = 'Véhicule mis à jour !';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      }
+    </script>
+        <!-- MODAL NOUVEAU TRAJET -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3>✦ Publier un nouveau trajet</h3>
+    <div class="pub-form">
+      <div class="form-row">
+        <div class="form-group"><label>Ville de départ</label><input type="text" placeholder="Ex : Paris — Nation"/></div>
+        <div class="form-group"><label>Ville d'arrivée</label><input type="text" placeholder="Ex : Lyon — Part-Dieu"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Date du trajet</label><input type="date"/></div>
+        <div class="form-group"><label>Heure de départ</label><input type="time"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Nombre de places</label><select><option>1</option><option>2</option><option selected>3</option><option>4</option></select></div>
+        <div class="form-group"><label>Contribution (€)</label><input type="number" placeholder="Ex : 15" min="1"/></div>
+      </div>
+      <div class="form-group"><label>Commentaire (optionnel)</label><input type="text" placeholder="Bagages, musique, animaux…"/></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary">Publier le trajet</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>

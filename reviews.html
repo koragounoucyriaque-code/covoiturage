@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CoVoitGo — Tableau de bord</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">CoVoit<span>Go</span></div>
+  <div class="sb-role-switch">
+    <button class="role-tab active" onclick="setRole('driver',this)">🚗 Conducteur</button>
+    <button class="role-tab" onclick="setRole('passenger',this)">🎒 Passager</button>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">Principal</div>
+    <a class="sb-item" href="dashboard.html"><span class="ico">📊</span> Tableau de bord</a>
+    <a class="sb-item" href="trips.html"><span class="ico">🗺️</span> Mes trajets</a>
+    <a class="sb-item" href="search.html"><span class="ico">🔍</span> Rechercher</a>
+    <a class="sb-item" href="#" id="sb-publish"><span class="ico">➕</span> Publier un trajet</a>
+
+    <div class="sb-section">Activité</div>
+    <a class="sb-item" href="messages.html"><span class="ico">💬</span> Messages <span class="badge">3</span></a>
+    <a class="sb-item" href="passengers.html"><span class="ico">👥</span> Passagers</a>
+    <a class="sb-item" href="reviews.html" class="sb-item active"><span class="ico">⭐</span> Avis</a>
+
+    <div class="sb-section">Compte</div>
+    <a class="sb-item" href="profile.html"><span class="ico">👤</span> Mon profil</a>
+    <a class="sb-item" href="payments.html"><span class="ico">💰</span> Paiements</a>
+    <a class="sb-item" href="settings.html"><span class="ico">⚙️</span> Paramètres</a>
+    <a class="sb-item" href="index.html"><span class="ico">🏠</span> Accueil</a>
+  </nav>
+  <div class="sb-footer">
+    <div class="user-chip">
+      <div class="avatar">CK</div>
+      <div class="user-info">
+        <div class="name">Cyriaque KORA</div>
+        <div class="role-lbl" id="role-label">Conducteur actif</div>
+      </div>
+      <div class="rating">⭐ 4.8</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <h1 id="page-title">Avis — Conducteur</h1>
+    <div class="topbar-right">
+      <div class="icon-btn">🔍</div>
+      <div class="icon-btn">
+        🔔
+        <span class="notif-dot"></span>
+      </div>
+      <button class="btn btn-primary" onclick="openModal()">+ Nouveau trajet</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-top"><span class="kpi-label">Note globale</span><div class="kpi-icon warn">⭐</div></div>
+        <div class="kpi-val">4.8 / 5</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-top"><span class="kpi-label">Avis reçus</span><div class="kpi-icon blue">📝</div></div>
+        <div class="kpi-val">42</div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-head">
+        <h2>Vos avis détaillés</h2>
+      </div>
+      <div class="card-body" style="padding: 1.5rem;">
+        <div class="review-item" style="margin-bottom: 1.5rem; padding-bottom: 1.5rem;">
+          <div class="review-top" style="margin-bottom: 0.8rem;">
+            <div class="r-av" style="background:linear-gradient(135deg,#f0b429,#e67e22); width:40px; height:40px; font-size:1rem;">ML</div>
+            <div>
+               <span class="r-name" style="font-size:1.1rem;">Marie L.</span>
+               <div style="font-size:0.8rem; color:var(--muted);">Conducteur - Trajet Paris → Lyon</div>
+            </div>
+            <span class="r-stars" style="font-size:1.2rem;">★★★★★</span>
+          </div>
+          <p style="font-size:0.95rem;">"Jean est un excellent conducteur ! Conduite souple et très ponctuel. La discussion était intéressante. Je recommande vivement pour vos prochains trajets."</p>
+        </div>
+        
+        <div class="review-item" style="margin-bottom: 1.5rem; padding-bottom: 1.5rem;">
+          <div class="review-top" style="margin-bottom: 0.8rem;">
+            <div class="r-av" style="background:linear-gradient(135deg,#58a6ff,#7c3aed); width:40px; height:40px; font-size:1rem;">AT</div>
+            <div>
+               <span class="r-name" style="font-size:1.1rem;">Alex T.</span>
+               <div style="font-size:0.8rem; color:var(--muted);">Passager - Trajet Lyon → Marseille</div>
+            </div>
+            <span class="r-stars" style="font-size:1.2rem;">★★★★☆</span>
+          </div>
+          <p style="font-size:0.95rem;">"Trajet sympathique. Jean a mis de la bonne musique. Seul bémol, le point de rendez-vous était un peu compliqué à trouver, mais sinon super."</p>
+        </div>
+      </div>
+    </div>
+        <!-- MODAL NOUVEAU TRAJET -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3>✦ Publier un nouveau trajet</h3>
+    <div class="pub-form">
+      <div class="form-row">
+        <div class="form-group"><label>Ville de départ</label><input type="text" placeholder="Ex : Paris — Nation"/></div>
+        <div class="form-group"><label>Ville d'arrivée</label><input type="text" placeholder="Ex : Lyon — Part-Dieu"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Date du trajet</label><input type="date"/></div>
+        <div class="form-group"><label>Heure de départ</label><input type="time"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Nombre de places</label><select><option>1</option><option>2</option><option selected>3</option><option>4</option></select></div>
+        <div class="form-group"><label>Contribution (€)</label><input type="number" placeholder="Ex : 15" min="1"/></div>
+      </div>
+      <div class="form-group"><label>Commentaire (optionnel)</label><input type="text" placeholder="Bagages, musique, animaux…"/></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary">Publier le trajet</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>

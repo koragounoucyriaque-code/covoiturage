@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CoVoitGo — Connexion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .page-header { padding: 8rem 2rem 4rem; text-align: center; background: rgba(29,185,84,0.05); }
+    .page-header h1 { font-family: 'Syne', sans-serif; font-size: 3rem; margin-bottom: 1rem; }
+    .page-container { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; }
+    .auth-container { max-width: 450px; margin: 6rem auto 4rem; padding: 2.5rem; background: #fff; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
+    .auth-container h2 { font-family: 'Syne', sans-serif; font-size: 2rem; margin-bottom: 1.5rem; text-align: center; }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: #555; margin-bottom: 0.5rem; }
+    .form-group input { width: 100%; padding: 0.8rem 1rem; border: 1px solid #ddd; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 1rem; outline: none; transition: border-color 0.2s; }
+    .form-group input:focus { border-color: var(--green, #1DB954); }
+    .btn-full { width: 100%; display: flex; justify-content: center; padding: 0.9rem; font-size: 1.05rem; }
+    .auth-link { text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: #666; }
+    .auth-link a { color: var(--green, #1DB954); font-weight: 600; text-decoration: none; }
+  </style>
+</head>
+<body>
+<nav style="background: rgba(255,255,255,0.95); box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+  <div class="logo"><a href="index.html" style="text-decoration:none; color:inherit;">CoVoit<span>Go</span></a></div>
+  <ul class="nav-links">
+    <li><a href="index.html#how">Comment ça marche</a></li>
+    <li><a href="index.html#features">Fonctionnalités</a></li>
+    <li><a href="public-trips.html">Trajets</a></li>
+    <li><a href="community.html">Communauté</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="login.html" class="btn btn-ghost">Connexion</a>
+    <a href="register.html" class="btn btn-primary">✦ Inscription gratuite</a>
+  </div>
+</nav>
+
+<div style="background: rgba(29,185,84,0.05); min-height: calc(100vh - 150px); display:flex; align-items:center; justify-content:center; padding:2rem;">
+  <div class="auth-container" style="margin: 0; width:100%;">
+    <h2>Bon retour !</h2>
+    <form id="login-form">
+      <div class="form-group">
+        <label>Adresse email</label>
+        <input type="email" required placeholder="nom@exemple.com" />
+      </div>
+      <div class="form-group">
+        <label style="display:flex; justify-content:space-between;">Mot de passe <a href="#" style="color:#1DB954; font-weight:normal; text-decoration:none;">Oublié ?</a></label>
+        <input type="password" required placeholder="••••••••" />
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Se connecter</button>
+    </form>
+    <div class="auth-link">
+      Pas encore de compte ? <a href="register.html">Inscrivez-vous</a>
+    </div>
+  </div>
+</div>
+<script>
+  document.getElementById('login-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const btn = this.querySelector('button');
+    btn.textContent = 'Connexion en cours...';
+    btn.disabled = true;
+    setTimeout(() => {
+      window.location.href = 'dashboard.html';
+    }, 800);
+  });
+</script>
+        
+<footer style="margin-top:auto;">
+  <div class="logo">CoVoit<span>Go</span></div>
+  <p>© 2025 CoVoitGo — Plateforme de Covoiturage</p>
+  <p>Confidentialité · CGU · Contact</p>
+</footer>
+<script src="js/main.js"></script>
+</body>
+</html>
